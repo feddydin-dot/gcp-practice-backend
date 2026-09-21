@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 5.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -35,12 +39,56 @@ resource "google_cloud_run_v2_service" "service" {
   project  = var.project_id
 
   template {
+    service_account = google_service_account.backend_sa.email
+
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.instance.connection_name]
+      }
+    }
+
     containers {
       image = var.image
       resources {
         limits = {
           cpu    = "1"
           memory = "512Mi"
+        }
+      }
+
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
+      }
+
+      env {
+        name  = "DB_USER"
+        value = google_sql_user.user.name
+      }
+
+      env {
+        name  = "DB_NAME"
+        value = google_sql_database.database.name
+      }
+
+      env {
+        name  = "INSTANCE_CONNECTION_NAME"
+        value = google_sql_database_instance.instance.connection_name
+      }
+
+      env {
+        name  = "BUCKET_NAME"
+        value = google_storage_bucket.photos.name
+      }
+
+      env {
+        name = "DB_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.db_password.secret_id
+            version = "latest"
+          }
         }
       }
     }
@@ -51,6 +99,11 @@ resource "google_cloud_run_v2_service" "service" {
     percent = 100
   }
 
+  depends_on = [
+    google_project_iam_member.backend_sql_client,
+    google_secret_manager_secret_iam_member.backend_secret_access,
+    google_storage_bucket_iam_member.backend_write,
+  ]
 }
 
 # Public access

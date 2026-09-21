@@ -9,11 +9,18 @@
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "@google-cloud/storage": "^7.14.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^2.3.0",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.6",
+    "@types/multer": "^1.4.12",
     "@types/node": "^26.6.2",
+    "@types/pg": "^8.11.10",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
