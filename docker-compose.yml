@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: notes
+    ports:
+      - "5432:5432"
+    volumes:
+      - notes-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  notes-postgres-data:
