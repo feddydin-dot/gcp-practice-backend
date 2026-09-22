@@ -34,6 +34,7 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
 });
 
+
 async function initDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS notes (
