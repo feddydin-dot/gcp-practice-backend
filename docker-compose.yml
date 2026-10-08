@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:15-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
